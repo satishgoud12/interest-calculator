@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interest Calculator | వడ్డీ కాలిక్యులేటర్</title>
+<meta name="description" content="Simple and compound interest calculator with step-by-step explanation in English and Telugu.">
+<meta name="theme-color" content="#14213D">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --ink:#14213D; --ink-soft:#4A5470; --paper:#F4F5F8; --card:#FFFFFF; --line:#D9DDE6;
+  --accent:#0F766E; --accent-bg:#E3F3F1; --gold:#B7791F; --gold-bg:#FBF1DC; --err:#B42318;
+  --shadow:0 1px 2px rgba(20,33,61,.08);
+}
+@media (prefers-color-scheme:dark){
+  :root{ --ink:#E8ECF5; --ink-soft:#A3ACC2; --paper:#0E1424; --card:#161E33; --line:#2A3452;
+    --accent:#4FD1C5; --accent-bg:#12312F; --gold:#F6C453; --gold-bg:#33290F; --err:#FF8A80; --shadow:none; }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans Telugu","Nirmala UI","Gautami",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  line-height:1.6;font-size:16px;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 16px}
+h1{font-size:1.35rem;margin:0;line-height:1.3}
+.sub{color:var(--ink-soft);font-size:.9rem;margin:2px 0 0}
+.lang{display:flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;flex:none}
+.lang button{border:0;background:transparent;color:var(--ink);padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.tabs button{padding:12px 8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;
+  font:inherit;font-weight:700;cursor:pointer;min-height:48px}
+.tabs button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+label,.lbl{display:block;font-weight:600;margin-bottom:6px;font-size:.95rem}
+.hint{font-weight:400;color:var(--ink-soft);font-size:.82rem}
+input,select{width:100%;font:inherit;font-size:1.05rem;padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;
+  background:var(--paper);color:var(--ink);min-height:48px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.field{margin-bottom:14px}
+.row{display:grid;gap:10px}
+.row.two{grid-template-columns:1fr 1fr}
+.row.three{grid-template-columns:repeat(3,1fr)}
+.sublbl{font-size:.8rem;color:var(--ink-soft);margin-bottom:3px;display:block}
+.actions{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:6px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px;cursor:pointer;min-height:50px}
+.btn.primary{background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.btn.primary{color:#06201D}}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.err{color:var(--err);font-weight:600;margin:10px 0 0;min-height:1.2em}
+#result[hidden]{display:none}
+.summary{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.tile{border-radius:10px;padding:12px 14px;background:var(--paper);border:1px solid var(--line)}
+.tile .k{font-size:.82rem;color:var(--ink-soft)}
+.tile .v{font-size:1.3rem;font-weight:800;overflow-wrap:anywhere}
+.tile.big{grid-column:1/-1;background:var(--accent-bg);border-color:var(--accent)}
+.tile.big .v{font-size:1.8rem;color:var(--accent)}
+h2{font-size:1.1rem;margin:0 0 10px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 16px 44px;border-left:2px solid var(--line);margin-left:15px}
+.steps li:last-child{border-left-color:transparent;padding-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:-16px;top:0;width:30px;height:30px;border-radius:50%;
+  background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.steps .t{font-weight:700;margin-bottom:2px}
+.math{background:var(--gold-bg);border-left:4px solid var(--gold);border-radius:6px;padding:8px 12px;margin:6px 0;
+  font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:.92rem;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.final{background:var(--accent-bg);border-left-color:var(--accent);font-weight:700}
+.note{color:var(--ink-soft);font-size:.88rem;margin:6px 0 0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:420px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:700;background:var(--paper)}
+.cmp{background:var(--gold-bg);border-radius:10px;padding:12px 14px;margin-top:12px}
+footer{text-align:center;color:var(--ink-soft);font-size:.82rem;padding:10px 0 24px}
+@media (max-width:420px){.row.three{grid-template-columns:1fr 1fr 1fr}.tile .v{font-size:1.1rem}.tile.big .v{font-size:1.5rem}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="t_title"></h1>
+      <p class="sub" id="t_sub"></p>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button id="btnEn" aria-pressed="true">EN</button>
+      <button id="btnTe" aria-pressed="false">తెలుగు</button>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabSimple" aria-selected="true"></button>
+    <button role="tab" id="tabCompound" aria-selected="false"></button>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label for="principal"><span id="t_principal"></span></label>
+      <input id="principal" type="number" inputmode="decimal" min="0" step="any" placeholder="100000">
+    </div>
+
+    <div class="field">
+      <span class="lbl" id="t_rate"></span>
+      <div class="row two">
+        <div>
+          <span class="sublbl" id="t_rateval"></span>
+          <input id="rate" type="number" inputmode="decimal" min="0" step="any" placeholder="12" aria-labelledby="t_rate">
+        </div>
+        <div>
+          <span class="sublbl" id="t_ratebasis"></span>
+          <select id="ratePer" aria-labelledby="t_ratebasis">
+            <option value="year"></option>
+            <option value="month"></option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="lbl"><span id="t_time"></span> <span class="hint" id="t_timehint"></span></span>
+      <div class="row three">
+        <div><span class="sublbl" id="t_years"></span><input id="years" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-labelledby="t_years"></div>
+        <div><span class="sublbl" id="t_months"></span><input id="months" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-labelledby="t_months"></div>
+        <div><span class="sublbl" id="t_days"></span><input id="days" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-labelledby="t_days"></div>
+      </div>
+    </div>
+
+    <div class="field" id="freqField" hidden>
+      <label for="freq" id="t_freq"></label>
+      <select id="freq">
+        <option value="1"></option><option value="2"></option><option value="4"></option>
+        <option value="12"></option><option value="365"></option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="calc"></button>
+      <button class="btn ghost" id="reset"></button>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+  </div>
+
+  <section id="result" hidden aria-live="polite">
+    <div class="card">
+      <div class="summary" id="summary"></div>
+      <div class="cmp" id="cmp" hidden></div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn ghost" id="copy"></button>
+        <button class="btn ghost" id="share"></button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 id="t_explain"></h2>
+      <ol class="steps" id="steps"></ol>
+    </div>
+    <div class="card" id="tableCard">
+      <h2 id="t_table"></h2>
+      <div class="tablewrap"><table id="tbl"></table></div>
+    </div>
+  </section>
+
+  <footer id="t_footer"></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Text in both languages ---------- */
+const T = {
+  en:{
+    title:"Interest Calculator", sub:"Simple & compound interest with full working",
+    simple:"Simple Interest", compound:"Compound Interest",
+    principal:"Principal amount (₹)", rate:"Interest rate", rateval:"Rate (%)", ratebasis:"Rate is charged",
+    perYear:"per year", perMonth:"per month",
+    time:"Time period", timehint:"(fill any one or more)", years:"Years", months:"Months", days:"Days",
+    freq:"Interest is added to principal", f1:"Every year", f2:"Every 6 months", f4:"Every 3 months", f12:"Every month", f365:"Every day",
+    calc:"Calculate", reset:"Reset",
+    principalOut:"Principal", interestOut:"Interest", totalOut:"Total amount (Principal + Interest)",
+    cmpTitle:"Compound vs Simple", cmpText:(c,s,d)=>`With simple interest the interest would be ${c}. Compound interest gives ${s}, which is ${d} more.`,
+    explain:"How we got this answer (step by step)",
+    table:"Year-by-year growth", yr:"Year", open:"Opening", intr:"Interest", close:"Closing",
+    copy:"Copy result", copied:"Copied!", share:"Share",
+    errP:"Enter a principal amount greater than 0.", errR:"Enter an interest rate greater than 0.", errT:"Enter a time period (years, months or days).", errNeg:"Values cannot be negative.",
+    footer:"Works offline after first visit. Add to Home Screen to use like an app.",
+    partial:"(partial)"
+  },
+  te:{
+    title:"వడ్డీ కాలిక్యులేటర్", sub:"సాధారణ వడ్డీ & చక్రవడ్డీ – పూర్తి వివరణతో",
+    simple:"సాధారణ వడ్డీ", compound:"చక్రవడ్డీ",
+    principal:"అసలు మొత్తం (₹)", rate:"వడ్డీ రేటు", rateval:"రేటు (%)", ratebasis:"వడ్డీ రేటు వర్తించే కాలం",
+    perYear:"సంవత్సరానికి", perMonth:"నెలకు",
+    time:"కాలం", timehint:"(ఏదైనా ఒకటి లేదా ఎక్కువ నింపండి)", years:"సంవత్సరాలు", months:"నెలలు", days:"రోజులు",
+    freq:"వడ్డీని అసలుకు కలిపే విధానం", f1:"ప్రతి సంవత్సరం", f2:"ప్రతి 6 నెలలకు", f4:"ప్రతి 3 నెలలకు", f12:"ప్రతి నెల", f365:"ప్రతి రోజు",
+    calc:"లెక్కించు", reset:"రీసెట్",
+    principalOut:"అసలు", interestOut:"వడ్డీ", totalOut:"మొత్తం (అసలు + వడ్డీ)",
+    cmpTitle:"చక్రవడ్డీ – సాధారణ వడ్డీ", cmpText:(c,s,d)=>`సాధారణ వడ్డీ అయితే వడ్డీ ${c} అవుతుంది. చక్రవడ్డీలో ${s} వస్తుంది, అంటే ${d} ఎక్కువ.`,
+    explain:"ఈ సమాధానం ఎలా వచ్చింది (దశల వారీగా)",
+    table:"సంవత్సరాల వారీగా పెరుగుదల", yr:"సంవత్సరం", open:"ప్రారంభం", intr:"వడ్డీ", close:"ముగింపు",
+    copy:"ఫలితం కాపీ చేయి", copied:"కాపీ అయింది!", share:"షేర్ చేయి",
+    errP:"అసలు మొత్తం 0 కంటే ఎక్కువ ఇవ్వండి.", errR:"వడ్డీ రేటు 0 కంటే ఎక్కువ ఇవ్వండి.", errT:"కాలాన్ని (సంవత్సరాలు, నెలలు లేదా రోజులు) ఇవ్వండి.", errNeg:"విలువలు ఋణాత్మకంగా ఉండకూడదు.",
+    footer:"మొదటిసారి తెరిచిన తర్వాత ఆఫ్‌లైన్‌లో కూడా పనిచేస్తుంది. 'Add to Home Screen' ద్వారా యాప్‌లా వాడండి.",
+    partial:"(పాక్షిక)"
+  }
+};
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+let lang = "en", mode = "simple", last = null;
+
+const money = n => "₹" + n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = (n,d=4) => (+n.toFixed(d)).toLocaleString("en-IN",{maximumFractionDigits:d});
+const val = id => { const v = parseFloat($(id).value); return isNaN(v) ? 0 : v; };
+
+/* ---------- UI text ---------- */
+function applyLang(){
+  const t = T[lang];
+  document.documentElement.lang = lang === "te" ? "te" : "en";
+  $("btnEn").setAttribute("aria-pressed", lang==="en");
+  $("btnTe").setAttribute("aria-pressed", lang==="te");
+  const map = {t_title:"title",t_sub:"sub",t_principal:"principal",t_rate:"rate",t_rateval:"rateval",t_ratebasis:"ratebasis",
+    t_time:"time",t_timehint:"timehint",t_years:"years",t_months:"months",t_days:"days",t_freq:"freq",
+    calc:"calc",reset:"reset",t_explain:"explain",t_table:"table",t_footer:"footer",copy:"copy",share:"share"};
+  for(const id in map) $(id).textContent = t[map[id]];
+  $("tabSimple").textContent = t.simple; $("tabCompound").textContent = t.compound;
+  const rp = $("ratePer").options; rp[0].textContent = t.perYear; rp[1].textContent = t.perMonth;
+  const fr = $("freq").options; [1,2,4,12,365].forEach((v,i)=> fr[i].textContent = t["f"+v]);
+  document.title = lang==="te" ? "వడ్డీ కాలిక్యులేటర్ | Interest Calculator" : "Interest Calculator | వడ్డీ కాలిక్యులేటర్";
+  try{ localStorage.setItem("lang", lang); }catch(e){}
+  if(last) render(last);
+}
+
+function setMode(m){
+  mode = m;
+  $("tabSimple").setAttribute("aria-selected", m==="simple");
+  $("tabCompound").setAttribute("aria-selected", m==="compound");
+  $("freqField").hidden = m !== "compound";
+  $("result").hidden = true; last = null; $("err").textContent = "";
+}
+
+/* ---------- Calculation ---------- */
+function compute(){
+  const t = T[lang];
+  const P = val("principal"), r = val("rate");
+  const Y = val("years"), M = val("months"), D = val("days");
+  if([P,r,Y,M,D].some(x=>x<0)) return {error:t.errNeg};
+  if(!(P>0)) return {error:t.errP};
+  if(!(r>0)) return {error:t.errR};
+  if(!(Y+M+D>0)) return {error:t.errT};
+
+  const per = $("ratePer").value;
+  const R = per==="month" ? r*12 : r;           // yearly rate
+  const tYears = Y + M/12 + D/365;              // time in years
+  const n = parseInt($("freq").value,10);
+
+  const SI = P*R*tYears/100;
+  const i = R/n;                                // % per period
+  const N = n*tYears;                           // number of periods
+  const factor = Math.pow(1+i/100, N);
+  const A_c = P*factor, CI = A_c - P;
+
+  return {mode, P, r, per, R, Y, M, D, tYears, n, SI, A_s:P+SI, i, N, factor, A_c, CI};
+}
+
+/* ---------- Rendering ---------- */
+function render(d){
+  const t = T[lang];
+  const interest = d.mode==="simple" ? d.SI : d.CI;
+  const total = d.mode==="simple" ? d.A_s : d.A_c;
+
+  $("summary").innerHTML =
+    `<div class="tile"><div class="k">${t.principalOut}</div><div class="v">${money(d.P)}</div></div>
+     <div class="tile"><div class="k">${t.interestOut}</div><div class="v">${money(interest)}</div></div>
+     <div class="tile big"><div class="k">${t.totalOut}</div><div class="v">${money(total)}</div></div>`;
+
+  const cmp = $("cmp");
+  if(d.mode==="compound"){
+    cmp.hidden = false;
+    cmp.innerHTML = `<b>${t.cmpTitle}</b><br>${t.cmpText(money(d.SI), money(d.CI), money(d.CI-d.SI))}`;
+  } else cmp.hidden = true;
+
+  $("steps").innerHTML = buildSteps(d).map(s=>`<li><div class="t">${s.t}</div>${s.b}</li>`).join("");
+  buildTable(d);
+  $("result").hidden = false;
+}
+
+const m = (x,cls="") => `<div class="math ${cls}">${x}</div>`;
+const p = x => `<p class="note" style="margin:4px 0">${x}</p>`;
+
+function timeText(d){
+  const parts=[];
+  if(lang==="en"){
+    if(d.Y) parts.push(`${num(d.Y)} year${d.Y===1?"":"s"}`);
+    if(d.M) parts.push(`${num(d.M)} month${d.M===1?"":"s"}`);
+    if(d.D) parts.push(`${num(d.D)} day${d.D===1?"":"s"}`);
+  } else {
+    if(d.Y) parts.push(`${num(d.Y)} సంవత్సరాలు`);
+    if(d.M) parts.push(`${num(d.M)} నెలలు`);
+    if(d.D) parts.push(`${num(d.D)} రోజులు`);
+  }
+  return parts.join(lang==="en"?", ":", ");
+}
+
+function timeConv(d){
+  // returns the line showing how time is converted to years
+  const bits=[];
+  if(d.Y) bits.push(`${num(d.Y)}`);
+  if(d.M) bits.push(`${num(d.M)}÷12`);
+  if(d.D) bits.push(`${num(d.D)}÷365`);
+  return `t = ${bits.join(" + ")} = ${num(d.tYears,6)} ${lang==="en"?"years":"సంవత్సరాలు"}`;
+}
+
+function buildSteps(d){
+  const en = lang==="en";
+  const S = [];
+  const rateWord = d.per==="month" ? (en?"per month":"నెలకు") : (en?"per year":"సంవత్సరానికి");
+
+  // 1 formula
+  if(d.mode==="simple"){
+    S.push({t: en?"Know the formula":"సూత్రం తెలుసుకోండి",
+      b: m(en?"Simple Interest = (P × R × t) ÷ 100\nTotal Amount = P + Interest":"సాధారణ వడ్డీ = (అసలు × రేటు × కాలం) ÷ 100\nమొత్తం = అసలు + వడ్డీ")+
+         p(en?"P = Principal (money lent/borrowed), R = yearly interest rate in %, t = time in years. In simple interest, interest is always calculated only on the original principal.":
+              "P = అసలు (ఇచ్చిన/తీసుకున్న డబ్బు), R = సంవత్సరానికి వడ్డీ రేటు (%), t = కాలం (సంవత్సరాలలో). సాధారణ వడ్డీలో వడ్డీ ఎల్లప్పుడూ మొదటి అసలుపైనే లెక్కిస్తారు.")});
+  } else {
+    S.push({t: en?"Know the formula":"సూత్రం తెలుసుకోండి",
+      b: m(en?"Amount = P × (1 + i/100) ^ N\nwhere i = R ÷ n  and  N = n × t\nCompound Interest = Amount − P":
+               "మొత్తం = అసలు × (1 + i/100) ^ N\nఇక్కడ i = R ÷ n  మరియు  N = n × t\nచక్రవడ్డీ = మొత్తం − అసలు")+
+         p(en?`P = Principal, R = yearly rate %, t = time in years, n = how many times interest is added in a year (here n = ${d.n}), i = rate for one period, N = total number of periods. In compound interest, the interest earned is added to the principal, and the next interest is calculated on the bigger amount.`:
+              `P = అసలు, R = సంవత్సరానికి రేటు %, t = కాలం (సంవత్సరాలలో), n = సంవత్సరంలో వడ్డీ ఎన్నిసార్లు అసలుకు కలుస్తుంది (ఇక్కడ n = ${d.n}), i = ఒక కాలానికి రేటు, N = మొత్తం కాలాల సంఖ్య. చక్రవడ్డీలో వచ్చిన వడ్డీ అసలుకు కలుస్తుంది, తర్వాతి వడ్డీ ఆ పెద్ద మొత్తంపై లెక్కిస్తారు.`)});
+  }
+
+  // 2 inputs
+  S.push({t: en?"Your inputs":"మీరిచ్చిన వివరాలు",
+    b: m(`${en?"Principal (P)":"అసలు (P)"} = ${money(d.P)}\n${en?"Rate":"రేటు"} = ${num(d.r)}% ${rateWord}\n${en?"Time":"కాలం"} = ${timeText(d)}`+
+         (d.mode==="compound"?`\n${en?"Interest added":"వడ్డీ కలిపేది"} = ${T[lang]["f"+d.n]}  (n = ${d.n})`:""))});
+
+  // 3 rate to yearly
+  if(d.per==="month"){
+    S.push({t: en?"Convert the rate to yearly":"రేటును సంవత్సరానికి మార్చండి",
+      b: m(`R = ${num(d.r)}% × 12 = ${num(d.R)}% ${en?"per year":"సంవత్సరానికి"}`)+
+         p(en?"The formula needs a yearly rate, and 1 year has 12 months.":"సూత్రానికి సంవత్సరం రేటు కావాలి, 1 సంవత్సరానికి 12 నెలలు.")});
+  } else {
+    S.push({t: en?"Yearly rate":"సంవత్సరం రేటు",
+      b: m(`R = ${num(d.R)}% ${en?"per year":"సంవత్సరానికి"}`)+
+         p(en?"The rate is already yearly, so no change is needed.":"రేటు ఇప్పటికే సంవత్సరానికి ఉంది, మార్చాల్సిన అవసరం లేదు.")});
+  }
+
+  // 4 time to years
+  const pureYears = d.Y>0 && !d.M && !d.D;
+  S.push({t: en?"Convert time to years":"కాలాన్ని సంవత్సరాలలోకి మార్చండి",
+    b: pureYears ? m(`t = ${num(d.tYears,6)} ${en?"years":"సంవత్సరాలు"}`)+p(en?"Time is already in years.":"కాలం ఇప్పటికే సంవత్సరాలలో ఉంది.")
+                 : m(timeConv(d))+p(en?"1 year = 12 months = 365 days.":"1 సంవత్సరం = 12 నెలలు = 365 రోజులు.")});
+
+  if(d.mode==="simple"){
+    S.push({t: en?"Calculate the interest":"వడ్డీని లెక్కించండి",
+      b: m(`SI = (${num(d.P,2)} × ${num(d.R)} × ${num(d.tYears,6)}) ÷ 100\nSI = ${num(d.P*d.R*d.tYears,4)} ÷ 100\nSI = ${money(d.SI)}`,"final")});
+    S.push({t: en?"Find the total amount":"మొత్తాన్ని కనుగొనండి",
+      b: m(`${en?"Amount":"మొత్తం"} = P + SI\n${en?"Amount":"మొత్తం"} = ${num(d.P,2)} + ${num(d.SI,2)}\n${en?"Amount":"మొత్తం"} = ${money(d.A_s)}`,"final")});
+  } else {
+    S.push({t: en?"Rate for one period (i) and number of periods (N)":"ఒక కాలానికి రేటు (i) మరియు కాలాల సంఖ్య (N)",
+      b: m(`i = R ÷ n = ${num(d.R)} ÷ ${d.n} = ${num(d.i,6)}%\nN = n × t = ${d.n} × ${num(d.tYears,6)} = ${num(d.N,6)}`)+
+         p(en?`Interest is added ${d.n} time(s) a year, so each period gets 1/${d.n} of the yearly rate.`:`సంవత్సరానికి ${d.n} సార్లు వడ్డీ కలుస్తుంది, కాబట్టి ప్రతి కాలానికి సంవత్సరం రేటులో 1/${d.n} భాగం వర్తిస్తుంది.`)+
+         (Math.abs(d.N-Math.round(d.N))>1e-9 ? p(en?"N is not a whole number, so the formula is applied with the fractional power (standard practice).":"N పూర్ణ సంఖ్య కాదు, కాబట్టి భిన్న ఘాతంతో సూత్రం వాడాం (సాధారణ పద్ధతి)."):"")});
+    S.push({t: en?"Find the growth factor":"పెరుగుదల కారకం కనుగొనండి",
+      b: m(`(1 + i/100) ^ N = (1 + ${num(d.i,6)}/100) ^ ${num(d.N,6)}\n= (${num(1+d.i/100,8)}) ^ ${num(d.N,6)}\n= ${num(d.factor,8)}`)+
+         p(en?`This means every ₹1 grows to ₹${num(d.factor,6)}.`:`అంటే ప్రతి ₹1 → ₹${num(d.factor,6)} అవుతుంది.`)});
+    S.push({t: en?"Calculate the total amount":"మొత్తాన్ని లెక్కించండి",
+      b: m(`${en?"Amount":"మొత్తం"} = P × ${num(d.factor,8)}\n${en?"Amount":"మొత్తం"} = ${num(d.P,2)} × ${num(d.factor,8)}\n${en?"Amount":"మొత్తం"} = ${money(d.A_c)}`,"final")});
+    S.push({t: en?"Find the compound interest":"చక్రవడ్డీని కనుగొనండి",
+      b: m(`CI = ${en?"Amount":"మొత్తం"} − P\nCI = ${num(d.A_c,2)} − ${num(d.P,2)}\nCI = ${money(d.CI)}`,"final")});
+  }
+  return S;
+}
+
+function buildTable(d){
+  const t = T[lang];
+  const total = d.tYears;
+  const rows = Math.ceil(total - 1e-9);
+  if(rows > 60 || rows < 1){ $("tableCard").hidden = true; return; }
+  $("tableCard").hidden = false;
+  const bal = tt => d.mode==="simple" ? d.P + d.P*d.R*tt/100 : d.P*Math.pow(1+d.i/100, d.n*tt);
+  let html = `<thead><tr><th>${t.yr}</th><th>${t.open}</th><th>${t.intr}</th><th>${t.close}</th></tr></thead><tbody>`;
+  let prevT = 0;
+  for(let k=1;k<=rows;k++){
+    const tt = Math.min(k,total);
+    const o = bal(prevT), c = bal(tt);
+    const label = tt<k ? `${num(tt,2)} ${t.partial}` : k;
+    html += `<tr><td>${label}</td><td>${money(o)}</td><td>${money(c-o)}</td><td>${money(c)}</td></tr>`;
+    prevT = tt;
+  }
+  $("tbl").innerHTML = html + "</tbody>";
+}
+
+function plainText(d){
+  const t = T[lang];
+  const interest = d.mode==="simple" ? d.SI : d.CI;
+  const total = d.mode==="simple" ? d.A_s : d.A_c;
+  return `${d.mode==="simple"?t.simple:t.compound}\n${t.principalOut}: ${money(d.P)}\n${t.rate}: ${num(d.r)}% ${d.per==="month"?t.perMonth:t.perYear}\n${t.time}: ${timeText(d)}\n${t.interestOut}: ${money(interest)}\n${t.totalOut}: ${money(total)}`;
+}
+
+/* ---------- Events ---------- */
+$("calc").addEventListener("click", ()=>{
+  const d = compute();
+  if(d.error){ $("err").textContent = d.error; $("result").hidden = true; last=null; return; }
+  $("err").textContent = ""; last = d; render(d);
+  $("result").scrollIntoView({behavior:"smooth",block:"start"});
+});
+["principal","rate","years","months","days"].forEach(id=>$(id).addEventListener("keydown",e=>{ if(e.key==="Enter") $("calc").click(); }));
+$("reset").addEventListener("click", ()=>{
+  ["principal","rate","years","months","days"].forEach(id=>$(id).value="");
+  $("ratePer").value="year"; $("freq").value="1";
+  $("result").hidden = true; last=null; $("err").textContent="";
+});
+$("tabSimple").addEventListener("click", ()=>setMode("simple"));
+$("tabCompound").addEventListener("click", ()=>setMode("compound"));
+$("btnEn").addEventListener("click", ()=>{ lang="en"; applyLang(); });
+$("btnTe").addEventListener("click", ()=>{ lang="te"; applyLang(); });
+$("copy").addEventListener("click", async ()=>{
+  if(!last) return;
+  try{ await navigator.clipboard.writeText(plainText(last)); const b=$("copy"); b.textContent=T[lang].copied; setTimeout(()=>b.textContent=T[lang].copy,1500); }catch(e){}
+});
+$("share").addEventListener("click", ()=>{
+  if(!last) return;
+  const txt = plainText(last);
+  if(navigator.share) navigator.share({text:txt}).catch(()=>{});
+  else window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");
+});
+
+/* ---------- Init ---------- */
+try{ const s = localStorage.getItem("lang"); if(s==="te"||s==="en") lang=s; }catch(e){}
+applyLang();
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{})); }
+})();
+</script>
+</body>
+</html>

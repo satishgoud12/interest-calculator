@@ -1,0 +1,15 @@
+{
+  "name": "Interest Calculator | వడ్డీ కాలిక్యులేటర్",
+  "short_name": "Interest",
+  "description": "Simple & compound interest calculator with step-by-step explanation in English and Telugu",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14213D",
+  "theme_color": "#14213D",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
